@@ -9,15 +9,25 @@ const COMMENT_FORMAT = `【問題】何が具体的に問題か（「少しズ�
 【原因】なぜそうなっているか（手首を使いすぎ・視点が近すぎるなど、動作・認識レベルで）
 【修正動作】明日のウォームアップで試す具体的な行動（「肘を机に固定して10本引く」のように1文で）`
 
+const SCORE_RUBRIC = `【採点基準（0〜100点）- この基準を厳守すること】
+0〜20: 基本形が描けていない、著しくずれている（未習熟・初回）
+21〜40: 形は認識できるが精度が低く根本的な課題あり（練習中・初心者標準）
+41〜60: 基本は押さえているが安定性・精度・比率に課題（練習段階の標準）
+61〜80: 安定して描けており技術的に信頼できる（良好）
+81〜100: 高い精度と表現力、自分でも満足できるレベル（優秀）
+※初心者の最初の数回は30〜50が標準。甘い採点を避け、正直に評価すること。`
+
 function buildSystemPrompt(metrics) {
   const keys = metrics ?? ['line', 'ellipse', 'proportion', 'balance']
-  const scoresLines = keys.map(k => `    "${k}": 0から10の整数`).join(',\n')
+  const scoresLines = keys.map(k => `    "${k}": 0から100の整数`).join(',\n')
   const feedbackLines = keys.map(k =>
     `    { "item": "${SCORE_META[k]?.label ?? k}", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." }`
   ).join(',\n')
 
   return `あなたはロジカルスケッチ専門の厳格なコーチです。
 初心者のスケッチを観察眼を持って分析し、以下のJSON形式のみで返してください。他のテキストは一切含めないでください。
+
+${SCORE_RUBRIC}
 
 feedbackの各commentは必ず以下の形式で構成してください：
 ${COMMENT_FORMAT}
@@ -46,15 +56,17 @@ const FRIDAY_SYSTEM_PROMPT_TEMPLATE = (weekTheme) => `あなたはロジカル�
 通常の4項目評価に加え、今週のドリルで練習したスキルの成果がどれだけ活かされているかを評価してください。
 以下のJSON形式のみで返してください。他のテキストは一切含めないでください。
 
+${SCORE_RUBRIC}
+
 feedbackの各commentは必ず【問題】【原因】【修正動作】の3パートで構成してください。
 
 {
   "scores": {
-    "line": 0から10の整数,
-    "ellipse": 0から10の整数,
-    "proportion": 0から10の整数,
-    "balance": 0から10の整数,
-    "drillApplied": 0から10の整数
+    "line": 0から100の整数,
+    "ellipse": 0から100の整数,
+    "proportion": 0から100の整数,
+    "balance": 0から100の整数,
+    "drillApplied": 0から100の整数
   },
   "feedback": [
     { "item": "線の精度", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." },
@@ -66,6 +78,34 @@ feedbackの各commentは必ず【問題】【原因】【修正動作】の3パ�
   "praise": "今回うまくいった点または前回から改善した点を1つ具体的に",
   "improvement": "次回のウォームアップで最も意識する1点（動作レベルで1文）",
   "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'>左に問題例・右に正しい例の比較図解</svg>"
+}`
+
+const ASSESSMENT_SYSTEM_PROMPT = `あなたはロジカルスケッチ専門の厳格なコーチです。
+これは定期スキル診断課題です。通常のフィードバックより厳密な基準で採点し、現在の実力を正確に数値化してください。
+
+${SCORE_RUBRIC}
+
+この診断は2週ごとの定点観測です。前回診断との比較ができるよう、客観的・一貫した基準で採点してください。
+feedbackの各commentは【問題】【原因】【修正動作】の3パートで構成してください。
+
+以下のJSON形式のみで返してください。他のテキストは一切含めないでください。
+
+{
+  "scores": {
+    "line": 0から100の整数,
+    "ellipse": 0から100の整数,
+    "proportion": 0から100の整数,
+    "balance": 0から100の整数
+  },
+  "feedback": [
+    { "item": "線の精度", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." },
+    { "item": "楕円対称性", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." },
+    { "item": "形の再現率", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." },
+    { "item": "全体バランス", "comment": "【問題】...\\n【原因】...\\n【修正動作】..." }
+  ],
+  "praise": "診断全体を通じてうまくいっている点を1つ具体的に",
+  "improvement": "次の診断（2週後）までに最優先で取り組むべき1点（動作レベルで1文）",
+  "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'>最も重要な改善点の比較図解</svg>"
 }`
 
 const WEEK_THEMES = {
@@ -83,12 +123,14 @@ const WEEK_THEMES = {
   12: '総合（デザイン案スケッチ）',
 }
 
-export async function analyzeSketch(imageBase64, mimeType, taskText, week, isFridayMode = false, metrics = null) {
+export async function analyzeSketch(imageBase64, mimeType, taskText, week, isFridayMode = false, metrics = null, isAssessment = false) {
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('.envにVITE_ANTHROPIC_API_KEYが設定されていません')
 
   const weekTheme = WEEK_THEMES[week] ?? '総合練習'
-  const systemPrompt = isFridayMode
+  const systemPrompt = isAssessment
+    ? ASSESSMENT_SYSTEM_PROMPT
+    : isFridayMode
     ? FRIDAY_SYSTEM_PROMPT_TEMPLATE(weekTheme)
     : buildSystemPrompt(metrics)
 

@@ -144,7 +144,9 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
 
   useEffect(() => { loadPatternSvg(task) }, [task?.week, task?.dayOfWeek])
 
-  const cardColor = task?.isSunday
+  const cardColor = task?.isAssessment
+    ? 'bg-indigo-600'
+    : task?.isSunday
     ? 'bg-purple-600'
     : task?.isFriday
     ? 'bg-orange-500'
@@ -283,7 +285,7 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
       </div>
 
       {/* アップロードボタン（固定フッター） */}
-      {!task?.isSunday && (
+      {(!task?.isSunday || task?.isAssessment) && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-4 bg-white/90 backdrop-blur border-t border-gray-100">
           <button
             onClick={onUpload}

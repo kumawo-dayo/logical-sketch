@@ -16,12 +16,12 @@ function ScoreBar({ label, score }) {
     <div>
       <div className="flex justify-between text-sm mb-1">
         <span className="text-gray-600">{label}</span>
-        <span className="font-semibold text-gray-900">{score}/10</span>
+        <span className="font-semibold text-gray-900">{score}/100</span>
       </div>
       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
         <div
           className="h-full bg-blue-500 rounded-full transition-all duration-500"
-          style={{ width: `${score * 10}%` }}
+          style={{ width: `${score}%` }}
         />
       </div>
     </div>
@@ -31,7 +31,7 @@ function ScoreBar({ label, score }) {
 function FeedbackView({ feedback }) {
   const scores = feedback.scores ?? {}
   const total = Object.values(scores).reduce((a, b) => a + b, 0)
-  const max = Object.keys(scores).length * 10
+  const max = Object.keys(scores).length * 100
 
   return (
     <div className="space-y-4 pb-8">
@@ -121,7 +121,7 @@ export default function Upload({ onBack, task: taskProp = null }) {
     setError(null)
     try {
       const isFridayMode = task.isFriday || task.isSaturday
-      const result = await analyzeSketch(image.base64, image.mimeType, task.task, task.week, isFridayMode, task.metrics)
+      const result = await analyzeSketch(image.base64, image.mimeType, task.task, task.week, isFridayMode, task.metrics, task.isAssessment)
       setFeedback(result)
       await db.sessions.add({
         date: new Date().toISOString().slice(0, 10),

@@ -784,6 +784,20 @@ const SUNDAY_INFO = {
   failPattern: '振り返りを飛ばして次の課題に進む',
 }
 
+const ASSESSMENT_INFO = {
+  warmup: null,
+  goal: '今の実力を正確に把握する。ウォームアップなしで一発目の線・形を評価してもらう',
+  tips: [
+    '補助線は使ってよい（ただし最終的な線は1本に絞ること）',
+    '15分以内で仕上げる（完成させることが条件）',
+    '普段通りに描く。実力以上を見せようとしない',
+  ],
+  successPattern: '3つのオブジェクトが紙に収まり、それぞれの特徴が識別できる',
+  failPattern: '時間オーバー、または形が認識できないほど崩れている',
+  duration: 15 * 60,
+  isAssessment: true,
+}
+
 const FRIDAY_TASKS = {
   1:  '消しゴム（約6×2×1.5cmの直方体）を「正面から」と「斜め45°から」の2視点で描く',
   2:  '自分のスマートフォンを2点透視で斜め上から描く（実物を横に置いて）',
@@ -867,7 +881,7 @@ async function getThursdayAdaptation(db, weekDrills) {
   const finalIndex = Math.min(metricToIndex[weakest] ?? 3, weekDrills.length - 1)
   return {
     finalIndex,
-    adaptation: `${SCORE_LABELS[weakest]}集中強化（直近3回平均 ${avg}/10）`,
+    adaptation: `${SCORE_LABELS[weakest]}集中強化（直近3回平均 ${avg}/100）`,
   }
 }
 
@@ -900,7 +914,12 @@ export async function getCurrentTask(db) {
   const isSunday = dayOfWeek === 6
 
   if (isSunday) {
-    return { week, dayOfWeek, dayLabel: label, dayNum, task: '週の振り返り', ...SUNDAY_INFO, metrics: ALL_WEEK_METRICS, isFriday, isSaturday, isSunday, adaptation: null }
+    const isEvenWeek = week % 2 === 0
+    const info = isEvenWeek ? ASSESSMENT_INFO : SUNDAY_INFO
+    const sundayTask = isEvenWeek
+      ? '定期スキル診断：円柱（高さ8cm・直径3cm）×2個 ＋ 直方体（6×4×3cm想定）×1個をA4横向きに配置'
+      : '週の振り返り'
+    return { week, dayOfWeek, dayLabel: label, dayNum, task: sundayTask, ...info, metrics: ALL_METRICS, isFriday, isSaturday, isSunday, adaptation: null }
   }
 
   if (isSaturday) {
@@ -960,7 +979,13 @@ export async function getWeekTasks(db) {
     let metrics = ALL_WEEK_METRICS
     let drillInfo = {}
 
-    if (isSunday) { task = '週の振り返り'; drillInfo = SUNDAY_INFO }
+    if (isSunday) {
+      const isEvenWeek = week % 2 === 0
+      task = isEvenWeek
+        ? '定期スキル診断：円柱（高さ8cm・直径3cm）×2個 ＋ 直方体（6×4×3cm想定）×1個をA4横向きに配置'
+        : '週の振り返り'
+      drillInfo = isEvenWeek ? ASSESSMENT_INFO : SUNDAY_INFO
+    }
     else if (isSaturday) { task = '金曜スケッチのフィードバック強化日'; drillInfo = SATURDAY_INFO }
     else if (isFriday) { task = fridayTask; drillInfo = FRIDAY_INFO }
     else {
