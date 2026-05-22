@@ -7,6 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_aLE3M4fxeoNlhKQHT72KiFs1
+      VERCEL_PROJECT_ID: prj_rEoPhQs4MDvEdfea7d1sHAlwcnVT
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,11 +18,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: team_aLE3M4fxeoNlhKQHT72KiFs1
-          vercel-project-id: prj_rEoPhQs4MDvEdfea7d1sHAlwcnVT
-          vercel-args: --prod
-          working-directory: ./
+      - run: npm install -g vercel@latest
+      - run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+      - run: vercel build --prod --token=$VERCEL_TOKEN
+      - run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
