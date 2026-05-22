@@ -92,7 +92,7 @@ export async function analyzeSketch(imageBase64, mimeType, taskText, week, isFri
     ? FRIDAY_SYSTEM_PROMPT_TEMPLATE(weekTheme)
     : buildSystemPrompt(metrics)
 
-  const res = await fetch('/api/v1/messages', {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
@@ -139,7 +139,7 @@ export async function generatePatternSvg(taskText, successPattern, failPattern) 
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('APIキーが設定されていません')
 
-  const res = await fetch('/api/v1/messages', {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
@@ -194,7 +194,7 @@ export async function askQuestion(messages, userStats) {
       }、苦手：${userStats.weakest ?? 'なし'}`
     : ''
 
-  const res = await fetch('/api/v1/messages', {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
