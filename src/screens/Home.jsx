@@ -332,6 +332,9 @@ export default function Home({ onTaskDetail, onUpload, onProgress, onSessionSele
               : '読み込み中...'}
           </div>
           <div className="text-base font-semibold leading-snug">{task?.task ?? ''}</div>
+          {task?.goal && !task.isSunday && (
+            <div className="mt-1.5 text-xs opacity-75 leading-snug line-clamp-2">{task.goal}</div>
+          )}
           {task?.isFriday && (
             <div className="mt-2 text-xs bg-white/20 rounded-lg px-2 py-1 inline-block">
               応用課題 · ドリルの成果も評価されます
@@ -343,7 +346,7 @@ export default function Home({ onTaskDetail, onUpload, onProgress, onSessionSele
             </div>
           )}
           {!task?.isSunday && (
-            <div className="mt-2 text-xs opacity-60">タップしてアップロード →</div>
+            <div className="mt-2 text-xs opacity-60">タップして手順を確認 →</div>
           )}
         </button>
 

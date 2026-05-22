@@ -173,6 +173,17 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
           )}
         </div>
 
+        {/* 適応選択バナー（Thursday のみ） */}
+        {task?.adaptation && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl px-4 py-3 flex items-start gap-2.5">
+            <span className="text-blue-500 text-base shrink-0">🎯</span>
+            <div>
+              <div className="text-xs font-semibold text-blue-700 mb-0.5">今日の重点（自動選択）</div>
+              <div className="text-sm text-blue-900">{task.adaptation}</div>
+            </div>
+          </div>
+        )}
+
         {/* ゴール */}
         {task?.goal && (
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -192,7 +203,7 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
         {/* ポイント */}
         {task?.tips?.length > 0 && (
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">ポイント</div>
+            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">今日の手順</div>
             <ul className="space-y-2.5">
               {task.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2.5">

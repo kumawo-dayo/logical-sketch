@@ -843,7 +843,7 @@ async function getEffectivePosition(db, first) {
 
 async function getThursdayAdaptation(db, weekDrills) {
   const recentSessions = await db.sessions.orderBy('createdAt').reverse().limit(3).toArray()
-  if (!recentSessions.length) return { finalIndex: 3, adaptation: null }
+  if (!recentSessions.length) return { finalIndex: 0, adaptation: 'まだスコアデータが少ないため、基本の直線ドリルに取り組みます' }
 
   const totals = {}
   const counts = {}
