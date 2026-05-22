@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/logical-sketch/sw.js', { scope: '/logical-sketch/' })})}
