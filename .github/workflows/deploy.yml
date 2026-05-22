@@ -19,6 +19,29 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm install -g vercel@latest
-      - run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-      - run: vercel build --prod --token=$VERCEL_TOKEN
-      - run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+      - name: Deploy (fire-and-forget)
+        run: timeout 90 vercel --prod --token=$VERCEL_TOKEN --yes || true
+
+      - name: Wait for deployment to be ready
+        run: |
+          echo "Polling for deployment status..."
+          for i in $(seq 1 18); do
+            RESP=$(curl -sf \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID&target=production&limit=1" \
+              2>/dev/null || echo '{}')
+            STATE=$(echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin).get('deployments',[]); print(d[0]['readyState'] if d else 'NONE')" 2>/dev/null || echo "UNKNOWN")
+            echo "Attempt $i/18: $STATE"
+            if [ "$STATE" = "READY" ]; then
+              echo "Deployment is READY"
+              exit 0
+            fi
+            if [ "$STATE" = "ERROR" ]; then
+              echo "Deployment failed"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "Timed out waiting for deployment"
+          exit 1
