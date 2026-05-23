@@ -56,7 +56,7 @@ function TaskTimer({ duration }) {
             <circle cx="50" cy="50" r="44" fill="none" stroke="#f3f4f6" strokeWidth="6" />
             <circle
               cx="50" cy="50" r="44" fill="none"
-              stroke={done ? '#10b981' : '#2563eb'} strokeWidth="6"
+              stroke={done ? '#10b981' : '#E85D2F'} strokeWidth="6"
               strokeDasharray={circumference}
               strokeDashoffset={circumference * (1 - progress)}
               strokeLinecap="round"
@@ -81,7 +81,7 @@ function TaskTimer({ duration }) {
             {!done && (
               <button
                 onClick={() => setRunning(r => !r)}
-                className="flex-1 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold active:opacity-80"
+                className="flex-1 py-2 rounded-xl bg-[#E85D2F] text-white text-sm font-semibold active:opacity-80"
               >
                 {running ? '一時停止' : '再開'}
               </button>
@@ -101,19 +101,19 @@ function TaskTimer({ duration }) {
 
 function WeekFlowMini({ tasks }) {
   return (
-    <div className="divide-y divide-gray-50">
+    <div className="divide-y divide-[#ECEAE3]">
       {tasks.map((t) => (
-        <div key={t.dayOfWeek} className={`flex items-start gap-3 px-4 py-3 ${t.isToday ? 'bg-blue-50' : ''}`}>
+        <div key={t.dayOfWeek} className={`flex items-start gap-3 px-4 py-3 ${t.isToday ? 'bg-[#FFF5F0]' : ''}`}>
           <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0
-            ${t.isToday ? 'bg-blue-600 text-white' : t.isPast ? 'bg-blue-100 text-blue-400' : 'bg-gray-100 text-gray-400'}`}>
+            ${t.isToday ? 'bg-[#1C1C18] text-white' : t.isPast ? 'bg-[#ECEAE3] text-[#807D74]' : 'bg-[#ECEAE3] text-[#B0AC9E]'}`}>
             {t.isPast ? '✓' : t.dayNum}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-gray-400 mb-0.5">
+            <div className="text-xs font-semibold text-[#807D74] mb-0.5">
               Day {t.dayNum}
-              {t.isToday && <span className="ml-1.5 text-blue-500">← 今日</span>}
+              {t.isToday && <span className="ml-1.5 text-[#E85D2F]">← 今日</span>}
             </div>
-            <div className={`text-sm leading-snug ${t.isPast ? 'text-gray-300 line-through' : t.isToday ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+            <div className={`text-sm leading-snug ${t.isPast ? 'text-[#B0AC9E] line-through' : t.isToday ? 'text-[#1C1C18] font-medium' : 'text-[#807D74]'}`}>
               {t.task}
             </div>
           </div>
@@ -152,13 +152,13 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
     ? 'bg-orange-500'
     : task?.isSaturday
     ? 'bg-teal-600'
-    : 'bg-blue-600'
+    : 'bg-[#1C1C18]'
 
   return (
     <div className="flex flex-col min-h-screen max-w-[430px] mx-auto">
-      <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
-        <button onClick={onBack} className="text-blue-600 font-medium text-sm">← 戻る</button>
-        <span className="font-semibold text-gray-900 text-base">課題の詳細</span>
+      <header style={{ background: '#fff', borderBottom: '1px solid #ECEAE3', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0, zIndex: 10 }}>
+        <button onClick={onBack} style={{ color: '#1C1C18', fontWeight: 500, fontSize: 14, background: 'none', border: 'none', cursor: 'pointer' }}>← 戻る</button>
+        <span style={{ fontWeight: 600, color: '#1C1C18', fontSize: 15 }}>課題の詳細</span>
       </header>
 
       <div className="p-4 space-y-4 pb-32">
@@ -177,11 +177,11 @@ export default function TaskDetail({ task, onBack, onUpload, weekData }) {
 
         {/* 適応選択バナー（Thursday のみ） */}
         {task?.adaptation && (
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl px-4 py-3 flex items-start gap-2.5">
-            <span className="text-blue-500 text-base shrink-0">🎯</span>
+          <div className="bg-[#FFF5F0] border border-[#F5C4A8] rounded-2xl px-4 py-3 flex items-start gap-2.5">
+            <span className="text-[#E85D2F] text-base shrink-0">🎯</span>
             <div>
-              <div className="text-xs font-semibold text-blue-700 mb-0.5">今日の重点（自動選択）</div>
-              <div className="text-sm text-blue-900">{task.adaptation}</div>
+              <div className="text-xs font-semibold text-[#C24A1E] mb-0.5">今日の重点（自動選択）</div>
+              <div className="text-sm text-[#1C1C18]">{task.adaptation}</div>
             </div>
           </div>
         )}

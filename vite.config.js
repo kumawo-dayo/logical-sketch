@@ -11,11 +11,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Sketch Trainer',
+        name: 'Logical Sketch',
         short_name: 'Sketch',
         description: '毎日スケッチしてAIフィードバックをもらう練習アプリ',
-        theme_color: '#2563eb',
-        background_color: '#f9fafb',
+        theme_color: '#E85D2F',
+        background_color: '#F7F5F0',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
