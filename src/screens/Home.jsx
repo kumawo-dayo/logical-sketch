@@ -204,7 +204,7 @@ function SessionThumb({ session, onSelect }) {
 
   const scores = session.scores ?? {}
   const total = Object.values(scores).reduce((a, b) => a + b, 0)
-  const max = Object.keys(scores).length * 10
+  const max = Object.keys(scores).length * 100
 
   return (
     <button
@@ -231,7 +231,7 @@ function ReviewThumb({ session, label }) {
 
   const scores = session?.scores ?? {}
   const total = Object.values(scores).reduce((a, b) => a + b, 0)
-  const max = Object.keys(scores).length * 10
+  const max = Object.keys(scores).length * 100
 
   return (
     <div className="flex-1 bg-white rounded-xl p-3 shadow-sm text-center">

@@ -127,9 +127,9 @@ export default function Progress({ onBack }) {
                         {isBest && <span className="text-xs bg-green-100 text-green-700 rounded px-1">得意</span>}
                         {isWorst && <span className="text-xs bg-red-100 text-red-600 rounded px-1">要強化</span>}
                       </span>
-                      <span className="font-semibold text-gray-900">{score}/100</span>
+                      <span className="text-2xl font-bold text-gray-900">{score}</span>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{
